@@ -1,0 +1,104 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="css/header.css" />
+		<style>
+			
+			#mui-content {
+				width: 100%;
+				position: absolute;
+				top: 44px;
+				bottom: 0px;
+				background: #2e3132;
+			}
+			
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav title" style="position: fixed;">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left title-color"></a>
+			<img id="download_qrcode" class="mui-media-object mui-pull-right" style="max-width: 30px; height: 20px; margin-top: 10px;" src="image/download.png">
+			<h1 class="mui-title title-color">My QR Code</h1>
+		</header>
+
+		<div id="mui-content" style="padding: 80px 30px 0px 30px;">
+			<div style="background-color: white;padding-top: 20px;padding-left: 20px;">
+				<img id="img_my_face" width="60px" style="border-radius: 8%;float: left;" src="" />
+				<label id="lab_nickname" style="float: left;margin-left: 10px;margin-top: 10px;"></label>
+			</div>
+			<div style="background-color: white;text-align: center;">
+		    		<img id="img_my_qrcode" style="max-width: 300px; height: 300px;" src="" />
+		    </div>
+		    <div style="background-color: white;text-align: center;">
+		    		<p style="padding-bottom: 10px;font-size: 12px;">Scan the QR Code above and friend me on LetsChat.</p>
+		    </div>
+			
+		</div>
+
+
+		<script src="js/mui.min.js"></script>
+		<script type="text/javascript" src="js/app.js"></script>
+		<script type="text/javascript">
+			mui.init()
+
+			mui.plusReady(function() {
+				var user = app.getUserGlobalInfo();
+				if (user != null) {
+					var faceImage = user.faceImage;
+					var nickname = user.nickname;
+					var qrcode = user.qrcode;
+					
+					var lab_nickname = document.getElementById("lab_nickname");
+					lab_nickname.innerHTML = nickname;
+				
+					if (app.isNotNull(faceImage)) {
+						var img_my_face = document.getElementById("img_my_face");
+						img_my_face.src = app.imgServerUrl + faceImage;
+					}
+					
+					if (app.isNotNull(qrcode)) {
+						var img_my_qrcode = document.getElementById("img_my_qrcode");
+						img_my_qrcode.src = app.imgServerUrl + qrcode;
+					}
+					
+					var download_qrcode = document.getElementById("download_qrcode");
+					download_qrcode.addEventListener("tap", function() {
+						plus.nativeUI.showWaiting("Downloading...");
+					
+						var dtask = plus.downloader.createDownload(
+						app.imgServerUrl + qrcode,
+						{},
+						function(downloadFile, status) {
+								plus.nativeUI.closeWaiting();
+								
+								if (status == 200) {
+									var tempFile = downloadFile.filename;
+									// 通过相册api保存照片到本地相册
+									plus.gallery.save(tempFile, function() {
+										app.showToast("Download successfully！", "success");
+									})
+								} else {
+									app.showToast("Failed to download...", "error");
+									console.log("Failed to download...");
+								}
+							}
+						);
+						
+						dtask.start();	// 启动下载任务
+						
+					});
+					
+				}
+						
+			});
+			
+		</script>
+	</body>
+
+</html>
