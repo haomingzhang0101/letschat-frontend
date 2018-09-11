@@ -52,7 +52,14 @@
 								plus.nativeUI.closeWaiting();
 								
 								if (data.status==200){
-									
+									mui.openWindow({
+										url: "searchFriendsResult.html",
+										id: "searchFriendsResult.html",
+										styles: {},
+										extras:{
+											willBeFriend: data.data
+										}
+									});
 								} else {
 									app.showToast(data.msg, "error");
 								}
