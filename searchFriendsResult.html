@@ -69,6 +69,38 @@
 				
 				var p_friend_username = document.getElementById("p_friend_username");
 				p_friend_username.innerHTML = "LetsChat ID: " + yourFriend.username;
+				
+				var btn_add_friend = document.getElementById("btn_add_friend");
+				btn_add_friend.addEventListener("tap", function() {
+					plus.nativeUI.showWaiting( "Loading..." );
+					
+					mui.ajax(app.serverUrl + "/u/addFriendRequest?myUserId=" + myInfo.id +
+										  "&friendUserName=" + yourFriend.username ,{
+							data:{},
+							dataType:'json',//服务器返回json格式数据
+							type:'post',//HTTP请求类型
+							timeout:10000,//超时时间设置为10秒；
+							headers:{'Content-Type':'application/json'},	              
+							success:function(data){
+								plus.nativeUI.closeWaiting();
+								
+								if (data.status==200){
+									app.showToast("Request sent", "success");
+									mui.openWindow({
+										url: "index.html",
+										id: "index.html"
+									});
+								} else {
+									app.showToast(data.msg, "error");
+								}
+								
+							}
+						});	
+				});
+				var btn_back = document.getElementById("btn_back");
+				btn_back.addEventListener("tap", function() {
+					mui.back();
+				})
 			});
 		</script>
 	</body>
